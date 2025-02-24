@@ -11,12 +11,13 @@ import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_USER
 public class JDBCModel {
     private Connection conn;
 
-    //Default dont change, if you want to change values for your database change in MySQLCredentials
+    // Default dont change, if you want to change values for your database change in
+    // MySQLCredentials
     public static final String SERVERHOST = "localhost";
     public static final String DATABASE = "mp2";
     public static final String PORT = "3306";
     public static final String USERNAME = "root";
-    public static final String PASSWORD= "1234";
+    public static final String PASSWORD = "1234";
 
     public JDBCModel(String database) {
         String serverHost = SERVERHOST.isEmpty() ? DEFAULT_SERVERHOST : SERVERHOST;
@@ -24,16 +25,23 @@ public class JDBCModel {
         String databaseName = database.isEmpty() ? DATABASE : database;
         String userName = USERNAME.isEmpty() ? DEFAULT_USERNAME : USERNAME;
         String password = PASSWORD.isEmpty() ? DEFAULT_PASSWORD : PASSWORD;
-
-        String jdbcUrl = "jdbc:mysql://"+serverHost+":" + port + "/" + databaseName;
+        
+        String jdbcUrl = "jdbc:mysql://" + serverHost + ":" + port + "/" + databaseName + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
         try {
             conn = DriverManager.getConnection(jdbcUrl, userName, password);
-            System.out.println("Successful Databse Connection");
+            //tester
+            System.out.println("Successful Databse Connection using: " + jdbcUrl);
         } catch (Exception e) {
             System.out.println("Failed Databse Connection");
             e.printStackTrace();
         }
+
+        
+    }
+
+    public JDBCModel() {
+        this(DATABASE);
     }
 
     public static void main(String[] args) {
