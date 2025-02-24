@@ -27,3 +27,4 @@ WebApplicationDB/target/
 default.sql
 MySQL80.session.sql
 WebApplicationDB/src/main/java/com/mycompany/webapplicationdb/model/MySQLCredentials.java
+.vscode
