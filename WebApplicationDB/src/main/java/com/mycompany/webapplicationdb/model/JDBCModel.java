@@ -2,6 +2,7 @@ package com.mycompany.webapplicationdb.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_PASSWORD;
 import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_PORT;
@@ -32,12 +33,12 @@ public class JDBCModel {
             conn = DriverManager.getConnection(jdbcUrl, userName, password);
             //tester
             System.out.println("Successful Databse Connection using: " + jdbcUrl);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Failed Databse Connection");
             e.printStackTrace();
         }
 
-        
+         
     }
 
     public JDBCModel() {
