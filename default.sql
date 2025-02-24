@@ -13,7 +13,8 @@ create table account(
 create table post(
     title VARCHAR(30),
     content text(200),
-    id int auto_increment primary key
+    id int auto_increment primary key,
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 create table posts(
