@@ -12,8 +12,6 @@ import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_PASS
 import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_PORT;
 import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_SERVERHOST;
 import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_USERNAME;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class JDBCModel {
 
@@ -30,7 +28,7 @@ public class JDBCModel {
     public static final String USERNAME = "root";
     public static final String PASSWORD = "1234";
 
-    public JDBCModel(String database) {
+    public JDBCModel(String database) throws DatabaseConnectionFailedException {
         String serverHost = SERVERHOST.isEmpty() ? DEFAULT_SERVERHOST : SERVERHOST;
         String port = PORT.isEmpty() ? DEFAULT_PORT : PORT;
         String databaseName = database.isEmpty() ? DATABASE : database;
@@ -41,40 +39,42 @@ public class JDBCModel {
         conn = renewConnection();
     }
 
-    public JDBCModel() {
+    public JDBCModel() throws DatabaseConnectionFailedException {
         this(DATABASE);
     }
 
-    // method to renew connection
-    private Connection renewConnection() {
+    // method to renew connection, always use this method in each method
+    private Connection renewConnection() throws DatabaseConnectionFailedException {
         try {
             if (conn != null) {
                 conn.close();
             }
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(JDBCModel.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            Class.forName("com.mysql.cj.jdbc.Driver");
             Connection c = DriverManager.getConnection(jdbcUrl, userName, password);
             // tester
             System.out.println("Successful Databse Connection using: " + jdbcUrl);
             return c;
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.out.println("Failed Databse Connection");
-            e.printStackTrace();
-            System.exit(0);
+            if (e instanceof ClassNotFoundException) {
+                System.out.println("Driver not found");
+            } if (e instanceof SQLException) {
+                System.out.println("SQL Exception");
+            } else {
+                System.out.println("Unknown Exception");
+            }
+            // TODO: handle this exception(in web.xml then add an error page)
+            throw new DatabaseConnectionFailedException();
         }
-        throw new UnsupportedOperationException();
     }
 
     // Method to get a HashMap of Usernames and passwords from Connection
-    public Map<String, String> getCredentials() {
+    public Map<String, String> getCredentials() throws DatabaseConnectionFailedException {
         conn = renewConnection();
         Map<String, String> credentials = new HashMap<>();
         String query = "SELECT username, password FROM account";
 
-        try ( Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
                 String u = rs.getString("username");
@@ -89,12 +89,12 @@ public class JDBCModel {
     }
 
     // Method to get the user_role using username from Connection
-    public String getUserRole(String username) {
+    public String getUserRole(String username) throws DatabaseConnectionFailedException {
         conn = renewConnection();
         String role = "";
         String query = "SELECT user_role FROM account WHERE username = '" + username + "'";
 
-        try ( Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
                 role = rs.getString("user_role");
@@ -107,6 +107,12 @@ public class JDBCModel {
     }
 
     public static void main(String[] args) {
-        new JDBCModel("mp2");
+        try {
+            new JDBCModel("mp2");
+        } catch (DatabaseConnectionFailedException ex) {
+        }
     }
+}
+
+class DatabaseConnectionFailedException extends Exception {
 }
