@@ -12,6 +12,8 @@ import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_PASS
 import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_PORT;
 import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_SERVERHOST;
 import static com.mycompany.webapplicationdb.model.MySQLCredentials.DEFAULT_USERNAME;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JDBCModel {
 
@@ -49,6 +51,11 @@ public class JDBCModel {
             if (conn != null) {
                 conn.close();
             }
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(JDBCModel.class.getName()).log(Level.SEVERE, null, ex);
+            }
             Connection c = DriverManager.getConnection(jdbcUrl, userName, password);
             // tester
             System.out.println("Successful Databse Connection using: " + jdbcUrl);
@@ -56,6 +63,7 @@ public class JDBCModel {
         } catch (SQLException e) {
             System.out.println("Failed Databse Connection");
             e.printStackTrace();
+            System.exit(0);
         }
         throw new UnsupportedOperationException();
     }
@@ -69,9 +77,9 @@ public class JDBCModel {
         try ( Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
-                String username = rs.getString("username");
-                String password = rs.getString("password");
-                credentials.put(username, password);
+                String u = rs.getString("username");
+                String p = rs.getString("password");
+                credentials.put(u, p);
             }
         } catch (SQLException e) {
             e.printStackTrace();
