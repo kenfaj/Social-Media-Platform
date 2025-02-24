@@ -24,3 +24,5 @@ hs_err_pid*
 replay_pid*
 WebApplicationDB/nb-configuration.xml
 WebApplicationDB/target/
+default.sql
+MySQL80.session.sql
