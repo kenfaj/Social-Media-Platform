@@ -59,10 +59,6 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
 
-        // set session object for authentication in each page
-        HttpSession session = request.getSession();
-        session.setAttribute("username", username);
-
         // check if username exists
         if (!map.containsKey(username)) {
             request.setAttribute("error", "Username does not exist");
@@ -75,6 +71,11 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
+        
+        // set session object for authentication in each page
+        HttpSession session = request.getSession();
+        session.setAttribute("username", username);
+        session.setAttribute("user_role", userRole);
 
         // check if user is guest
         if (userRole.equals("guest")) {
