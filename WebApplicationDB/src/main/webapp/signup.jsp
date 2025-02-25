@@ -13,7 +13,7 @@
     </head>
     <body>
         <h1>Sign Up</h1>
-        <form action="/SignUpServlet" method="POST">
+        <form action="SignUpServlet" method="POST">
             <label>Username: <input type="text" name="username" /></label><br>
             <label>Password: <input type="password" name="password" /></label><br>
             <input type="submit" value="Sign Up" />
