@@ -36,7 +36,7 @@ public class LoginServlet extends HttpServlet {
      * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, DatabaseConnectionFailedException {
         response.setContentType("text/html;charset=UTF-8");
 
         //TODO: handle inexpected access(siguro check lang if nakalogin as user from session obj)
@@ -49,13 +49,14 @@ public class LoginServlet extends HttpServlet {
         JDBCModel model;
         Map<String, String> map = new HashMap<>();
         String userRole = "";
-        try {
+        try{
             model = new JDBCModel();
             map = model.getCredentials();
             userRole = model.getUserRole(username);
         } catch (DatabaseConnectionFailedException ex) {
             //TODO: handle exception(web.xml then add an error page)
-
+            request.setAttribute("error", "Database connection failed");
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
 
         // set session object for authentication in each page
@@ -116,7 +117,12 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (DatabaseConnectionFailedException ex) {
+            request.setAttribute("error", "Database connection failed");
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
+        }
     }
 
     /**
@@ -130,7 +136,11 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (DatabaseConnectionFailedException ex) {
+            request.setAttribute("error", "Database connection failed");
+            request.getRequestDispatcher("/error.jsp").forward(request, response);        }
     }
 
     /**
