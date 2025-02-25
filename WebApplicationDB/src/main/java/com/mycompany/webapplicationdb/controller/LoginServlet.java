@@ -55,12 +55,8 @@ public class LoginServlet extends HttpServlet {
             userRole = model.getUserRole(username);
         } catch (DatabaseConnectionFailedException ex) {
             //TODO: handle exception(web.xml then add an error page)
-
+            
         }
-
-        // set session object for authentication in each page
-        HttpSession session = request.getSession();
-        session.setAttribute("username", username);
 
         // check if username exists
         if (!map.containsKey(username)) {
@@ -74,6 +70,11 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
+        
+        // set session object for authentication in each page
+        HttpSession session = request.getSession();
+        session.setAttribute("username", username);
+        session.setAttribute("user_role", userRole);
 
         // check if user is guest
         if (userRole.equals("guest")) {
